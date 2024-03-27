@@ -1,0 +1,36 @@
+package baranov.viacheslav.graduateworkcloudstorage.model.entity;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "users")
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+
+    @Column(unique = true, nullable = false)
+    private String email;
+
+    @Column(nullable = false)
+    private String password;
+
+    @Embedded
+    private UserData userData;
+
+    @ManyToOne(optional = false)
+    private Role role;
+
+    @Override
+    public String toString() {
+        return "User {" + "id " + id + ", login = " + email + userData + "}\n";
+    }
+}
