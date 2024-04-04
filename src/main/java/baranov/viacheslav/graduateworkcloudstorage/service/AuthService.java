@@ -26,7 +26,6 @@ public class AuthService {
         }
         UserDetails userDetails = userService.loadUserByUsername(authRequest.getLogin());
         String token = jwtTokenUtils.generateToken(userDetails);
-        AuthResponse authResponse = new AuthResponse(token);
         return ResponseEntity.ok()
                 .header("Description", "Success authorization")
                 .body(new AuthResponse(token));
