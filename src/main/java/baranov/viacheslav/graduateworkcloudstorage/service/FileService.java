@@ -3,6 +3,8 @@ package baranov.viacheslav.graduateworkcloudstorage.service;
 import baranov.viacheslav.graduateworkcloudstorage.model.entity.StorageFile;
 import baranov.viacheslav.graduateworkcloudstorage.repository.FileRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class FileService {
+    private static final Logger logger = LogManager.getLogger(FileService.class);
     private static final String DESC = "Description";
     private final FileRepository fileRepository;
 
@@ -37,18 +40,22 @@ public class FileService {
         StorageFile newStorageFile = convertToStorageFile(multipartFile);
         String filename = newStorageFile.getFilename();
         if (fileRepository.existsByFilename(filename)) {
+            logger.error("Filename already exists");
             return ResponseEntity.badRequest().header(DESC, "This filename already exists").build();
         }
         fileRepository.save(newStorageFile);
+        logger.info("File success upload");
         return ResponseEntity.ok().header(DESC, "Success upload").build();
     }
 
     @Transactional
     public ResponseEntity<?> deleteFile(String filename) {
         if (!fileRepository.existsByFilename(filename)) {
+            logger.error("File does not exists");
             return ResponseEntity.badRequest().header(DESC, "File does not exists").build();
         }
         fileRepository.deleteFileByFilename(filename);
+        logger.info("File success delete");
         return ResponseEntity.ok().header(DESC, "Success delete").build();
     }
 
@@ -56,8 +63,10 @@ public class FileService {
     public ResponseEntity<?> downloadFile(String filename) {
         StorageFile storageFile = fileRepository.getFileByFilename(filename).orElse(null);
         if (storageFile == null) {
+            logger.error("File does not exists");
             return ResponseEntity.badRequest().header(DESC, "File does not exists").build();
         }
+        logger.info("File success download");
         return ResponseEntity.ok().header(DESC, "Success download").body(storageFile.getBytes());
     }
 
@@ -65,10 +74,12 @@ public class FileService {
     public ResponseEntity<?> updateFile(String filename, StorageFile newStorageFile) {
         StorageFile storageFile = fileRepository.getFileByFilename(filename).orElse(null);
         if (storageFile == null) {
+            logger.error("File does not exists");
             return ResponseEntity.badRequest().header(DESC, "File does not exists").build();
         }
         storageFile.setFilename(newStorageFile.getFilename());
         fileRepository.save(storageFile);
+        logger.info("File success update");
         return ResponseEntity.ok().header(DESC, "Success update").build();
     }
 

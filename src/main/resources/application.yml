@@ -16,3 +16,6 @@ spring:
 jwt:
   secret: 'VSVGqRQYZmVTy426JEnUiAmgzmL4RJmSywqqRPX90Xs='
   lifetime: '1h'
+
+server:
+  port: 8080
